@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Agent Infrastructure Platform
+  aip:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - AIP_LOG_LEVEL=info
+      - AIP_REGISTRY_URL=http://localhost:8000
+    volumes:
+      - aip_data:/app/data
+    networks:
+      - aip_network
+    depends_on:
+      - redis
+      - qdrant
+      - neo4j
+    restart: unless-stopped
+
+  # MCP Server
+  mcp-server:
+    build: .
+    command: ["aip", "serve", "--protocol", "mcp", "--port", "8001"]
+    ports:
+      - "8001:8001"
+    environment:
+      - AIP_LOG_LEVEL=info
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+  # A2A Server
+  a2a-server:
+    build: .
+    command: ["aip", "serve", "--protocol", "a2a", "--port", "8002"]
+    ports:
+      - "8002:8002"
+    environment:
+      - AIP_LOG_LEVEL=info
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+  # Redis for caching and messaging
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+  # Qdrant for vector storage
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+  # Neo4j for graph storage
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - aip_network
+    restart: unless-stopped
+
+volumes:
+  aip_data:
+  redis_data:
+  qdrant_data:
+  neo4j_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  aip_network:
+    driver: bridge
