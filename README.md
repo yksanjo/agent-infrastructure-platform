@@ -1,5 +1,11 @@
 # Agent Infrastructure Platform (AIP)
 
+[![PyPI version](https://badge.fury.io/py/agent-infrastructure-platform.svg)](https://badge.fury.io/py/agent-infrastructure-platform)
+[![Python Versions](https://img.shields.io/pypi/pyversions/agent-infrastructure-platform.svg)](https://pypi.org/project/agent-infrastructure-platform/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://github.com/YOUR_USERNAME/agent-infrastructure-platform/actions/workflows/tests.yml/badge.svg)](https://github.com/YOUR_USERNAME/agent-infrastructure-platform/actions)
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-blue)](https://github.com/YOUR_USERNAME/agent-infrastructure-platform/pkgs/container/agent-infrastructure-platform)
+
 > **The Operating System for the Trillion-Agent Economy**
 
 A world-class, production-ready infrastructure platform for building, deploying, and governing multi-agent systems at scale.
